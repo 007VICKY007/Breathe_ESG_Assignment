@@ -74,25 +74,31 @@ Regenerate: `python scripts/generate_sample_data.py`
 
 ## Deployment
 
+> **DNS not found on Railway?** See [docs/DEPLOYMENT_TROUBLESHOOTING.md](docs/DEPLOYMENT_TROUBLESHOOTING.md) — this is almost always missing **Public Networking → Generate Domain** on the **web** service, not a code issue.
+
 ### Railway (backend + worker + PostgreSQL + Redis)
 
 1. Create Railway project with **PostgreSQL** and **Redis** plugins.
-2. Create **two services** from the same repo, root directory `backend/`:
-   - **Web service:** use `railway.toml` — runs migrate + bootstrap + gunicorn
-   - **Worker service:** use `railway.worker.toml` — runs Celery worker
-3. Set environment variables on both services:
+2. Create **two services** from the same repo:
+   - **Web service:** Root Directory = `backend`, uses `railway.toml`
+   - **Worker service:** Root Directory = `backend`, uses `railway.worker.toml` — **no public URL**
+3. On the **WEB service only:** Settings → Networking → **Public Networking** → **Generate Domain**  
+   Copy the `https://xxxx.up.railway.app` URL (not `.railway.internal`).
+4. Set environment variables on **web + worker**:
 
 ```
 DJANGO_SETTINGS_MODULE=breathe_esg.settings.production
 SECRET_KEY=<random-64-char-string>
-DATABASE_URL=<from PostgreSQL plugin>
-REDIS_URL=<from Redis plugin>
-ALLOWED_HOSTS=your-app.up.railway.app
+DATABASE_URL=${{Postgres.DATABASE_URL}}
+REDIS_URL=${{Redis.REDIS_URL}}
+RAILWAY_PUBLIC_DOMAIN=xxxx.up.railway.app
+ALLOWED_HOSTS=xxxx.up.railway.app,.up.railway.app
 CORS_ALLOWED_ORIGINS=https://your-frontend.vercel.app
 CELERY_TASK_ALWAYS_EAGER=False
+SECURE_SSL_REDIRECT=False
 ```
 
-4. Health check: `GET /api/v1/health/`
+5. Verify: `https://xxxx.up.railway.app/api/v1/health/` returns `{"status":"healthy",...}`
 
 ### Vercel (frontend)
 
