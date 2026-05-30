@@ -13,11 +13,20 @@ export function UploadForm({ sourceType, label }) {
   const { register, handleSubmit, reset, formState: { errors } } = useForm()
 
   const onSubmit = async ({ file }) => {
-    if (!file?.[0]) return
+    const selected = file?.[0] ?? file
+    if (!selected) return
+
+    const filename = selected.name || 'upload'
+
     try {
-      const job = await ingest.mutateAsync(file[0])
+      const job = await ingest.mutateAsync(selected)
+      toast(
+        job?.status === 'DONE'
+          ? `Ingested ${filename} — ${job.rows_created} rows`
+          : `Ingestion started — ${filename}`,
+        'success',
+      )
       reset()
-      toast(`Ingestion started — ${file[0].name}`, 'success')
       if (job?.id) navigate(`/jobs/${job.id}`)
     } catch (e) {
       toast(e.message, 'error')
