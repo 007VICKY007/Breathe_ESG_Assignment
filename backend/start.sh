@@ -1,15 +1,12 @@
 #!/usr/bin/env bash
 set -euo pipefail
-
-# Railway injects PORT; default 8000 for local Docker tests
 PORT="${PORT:-8080}"
-
+echo "==> Collecting static files..."
+python manage.py collectstatic --noinput
 echo "==> Running migrations..."
 python manage.py migrate --noinput
-
 echo "==> Ensuring demo user exists..."
 python manage.py bootstrap_demo || true
-
 echo "==> Starting gunicorn on 0.0.0.0:8080"
 exec gunicorn breathe_esg.wsgi:application \
   --bind "0.0.0.0:8080" \
