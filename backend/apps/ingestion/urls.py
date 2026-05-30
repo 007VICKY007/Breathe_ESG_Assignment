@@ -8,6 +8,7 @@ from .views import (
     IngestUtilityView,
     IngestionJobDetailView,
     IngestionJobListView,
+    IngestionJobRetryView,
 )
 
 urlpatterns = [
@@ -16,6 +17,7 @@ urlpatterns = [
     path("ingest/travel/", IngestTravelView.as_view(), name="ingest-travel"),
     path("jobs/", IngestionJobListView.as_view(), name="job-list"),
     path("jobs/<uuid:pk>/", IngestionJobDetailView.as_view(), name="job-detail"),
+    path("jobs/<uuid:pk>/retry/", IngestionJobRetryView.as_view(), name="job-retry"),
     path(
         "jobs/<uuid:pk>/records/",
         JobEmissionRecordsView.as_view(),

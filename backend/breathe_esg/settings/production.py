@@ -29,6 +29,10 @@ CSRF_TRUSTED_ORIGINS = _csrf_origins
 
 CELERY_TASK_ALWAYS_EAGER = env.bool("CELERY_TASK_ALWAYS_EAGER", default=False)
 
+# Run ingestion in the web process when no Celery worker is deployed (Railway default).
+# Set False only when a dedicated worker service is running.
+INGESTION_RUN_SYNC = env.bool("INGESTION_RUN_SYNC", default=True)
+
 MEDIA_ROOT = BASE_DIR / "media"
 
 # CORS: set CORS_ALLOWED_ORIGINS=https://your-app.vercel.app in Railway

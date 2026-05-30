@@ -1,7 +1,8 @@
-import { Link, useParams } from 'react-router-dom'
+import { Link, useNavigate, useParams } from 'react-router-dom'
 import { ArrowLeft, CheckCheck, Loader2, AlertTriangle } from 'lucide-react'
-import { useJob, useJobRecords, useBulkApprove } from '@/api/hooks'
+import { useJob, useJobRecords, useBulkApprove, isJobStale } from '@/api/hooks'
 import { RecordRow } from '@/components/RecordRow'
+import { JobActions } from '@/components/JobActions'
 import { StatusBadge } from '@/components/StatusBadge'
 import { StatCard, PageHeader, Skeleton } from '@/components/PageElements'
 import { Button } from '@/components/ui/button'
@@ -13,6 +14,7 @@ import { useToast } from '@/context/ToastContext'
 
 export default function JobDetail() {
   const { jobId } = useParams()
+  const navigate = useNavigate()
   const { toast } = useToast()
   const { data: job, isLoading: jobLoading } = useJob(jobId)
   const { data: records = [], isLoading: recordsLoading } = useJobRecords(jobId)
@@ -61,6 +63,7 @@ export default function JobDetail() {
               {job.source_category} · <StatusBadge status={job.status} />
             </span>
           }
+          action={job ? <JobActions job={job} onDeleted={() => navigate('/')} /> : null}
         />
       </div>
 
@@ -75,7 +78,14 @@ export default function JobDetail() {
         />
       </div>
 
-      {isProcessing && (
+      {isJobStale(job) && (
+        <div className="flex items-center gap-3 rounded-xl border border-amber-200 bg-amber-50 px-5 py-4 text-sm text-amber-900">
+          <AlertTriangle className="h-4 w-4 shrink-0" />
+          This job is stuck — click Retry or delete and re-upload after backend redeploy.
+        </div>
+      )}
+
+      {isProcessing && !isJobStale(job) && (
         <div className="flex items-center gap-3 rounded-xl border border-blue-200 bg-blue-50 px-5 py-4 text-sm text-blue-800">
           <Loader2 className="h-4 w-4 animate-spin" />
           Processing ingestion pipeline — this page refreshes automatically…

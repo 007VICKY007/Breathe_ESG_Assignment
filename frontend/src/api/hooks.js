@@ -1,6 +1,22 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { api, getPaginatedResults } from './client'
 
+const STALE_PENDING_MS = 90_000 // stop polling after 90s
+
+function isActivelyProcessing(jobs) {
+  const now = Date.now()
+  return (jobs || []).some((j) => {
+    if (!['PENDING', 'PROCESSING'].includes(j.status)) return false
+    const age = now - new Date(j.created_at).getTime()
+    return age < STALE_PENDING_MS
+  })
+}
+
+export function isJobStale(job) {
+  if (!job || !['PENDING', 'PROCESSING'].includes(job.status)) return false
+  return Date.now() - new Date(job.created_at).getTime() > STALE_PENDING_MS
+}
+
 export function useMe(enabled = true) {
   return useQuery({
     queryKey: ['me'],
@@ -13,11 +29,7 @@ export function useJobs() {
   return useQuery({
     queryKey: ['jobs'],
     queryFn: async () => getPaginatedResults((await api.get('/jobs/')).data),
-    refetchInterval: (query) => {
-      const jobs = query.state.data || []
-      const pending = jobs.some((j) => ['PENDING', 'PROCESSING'].includes(j.status))
-      return pending ? 3000 : false
-    },
+    refetchInterval: (query) => (isActivelyProcessing(query.state.data) ? 3000 : false),
   })
 }
 
@@ -28,7 +40,9 @@ export function useJob(jobId) {
     enabled: !!jobId,
     refetchInterval: (query) => {
       const job = query.state.data
-      if (job && ['PENDING', 'PROCESSING'].includes(job.status)) return 2000
+      if (job && ['PENDING', 'PROCESSING'].includes(job.status) && !isJobStale(job)) {
+        return 2000
+      }
       return false
     },
   })
@@ -89,10 +103,39 @@ export function useIngest(sourceType) {
       form.append('file', file)
       return (await api.post(paths[sourceType], form)).data
     },
-    onSuccess: () => qc.invalidateQueries({ queryKey: ['jobs'] }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['jobs'] })
+      qc.invalidateQueries({ queryKey: ['dashboard'] })
+    },
   })
 }
 
+export function useDeleteJob() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: async (jobId) => {
+      await api.delete(`/jobs/${jobId}/`)
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['jobs'] })
+      qc.invalidateQueries({ queryKey: ['dashboard'] })
+      qc.invalidateQueries({ queryKey: ['records'] })
+      qc.invalidateQueries({ queryKey: ['anomalies'] })
+    },
+  })
+}
+
+export function useRetryJob() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: async (jobId) => (await api.post(`/jobs/${jobId}/retry/`)).data,
+    onSuccess: (_, jobId) => {
+      qc.invalidateQueries({ queryKey: ['jobs'] })
+      qc.invalidateQueries({ queryKey: ['jobs', jobId] })
+      qc.invalidateQueries({ queryKey: ['dashboard'] })
+    },
+  })
+}
 export function useBulkApprove(jobId) {
   const qc = useQueryClient()
   return useMutation({

@@ -2,8 +2,9 @@ import { Link } from 'react-router-dom'
 import {
   Database, CloudUpload, AlertCircle, Clock, Download, FileSpreadsheet,
 } from 'lucide-react'
-import { useJobs, useDashboard } from '@/api/hooks'
+import { useJobs, useDashboard, isJobStale } from '@/api/hooks'
 import { UploadForm } from '@/components/UploadForm'
+import { JobActions } from '@/components/JobActions'
 import { StatusBadge } from '@/components/StatusBadge'
 import { ScopePieChart, ReviewStatusBar } from '@/components/DashboardCharts'
 import { StatCard, PageHeader, Skeleton, EmptyState } from '@/components/PageElements'
@@ -22,9 +23,17 @@ const SAMPLE_FILES = [
 export default function IngestionHistory() {
   const { data: jobs = [], isLoading } = useJobs()
   const { data: dashboard, isLoading: dashLoading } = useDashboard()
+  const staleJobs = jobs.filter(isJobStale)
 
   return (
     <div className="space-y-8">
+      {staleJobs.length > 0 && (
+        <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
+          <strong>{staleJobs.length} job(s) stuck in PENDING</strong> — likely created before
+          sync ingestion was enabled. Use <strong>Retry</strong> (↻) or <strong>Delete</strong> (🗑)
+          on each row, then re-upload after redeploying the latest backend.
+        </div>
+      )}
       <PageHeader
         title="Ingestion & review"
         description="Upload client source files, monitor jobs, and approve normalized emission rows before audit lock."
@@ -188,11 +197,12 @@ export default function IngestionHistory() {
                   <TableHead className="text-right">Rows</TableHead>
                   <TableHead className="text-right">Errors</TableHead>
                   <TableHead>Status</TableHead>
+                  <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {jobs.map((job) => (
-                  <TableRow key={job.id}>
+                  <TableRow key={job.id} className={isJobStale(job) ? 'bg-amber-50/50' : undefined}>
                     <TableCell>
                       <span className="rounded bg-slate-100 px-2 py-0.5 text-xs font-medium">
                         {job.source_category}
@@ -217,6 +227,12 @@ export default function IngestionHistory() {
                     </TableCell>
                     <TableCell>
                       <StatusBadge status={job.status} />
+                      {isJobStale(job) && (
+                        <span className="ml-1 text-[10px] text-amber-600">stuck</span>
+                      )}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <JobActions job={job} />
                     </TableCell>
                   </TableRow>
                 ))}

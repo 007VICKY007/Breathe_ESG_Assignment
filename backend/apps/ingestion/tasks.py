@@ -34,9 +34,11 @@ def _resolve_parser(job: IngestionJob):
     return PARSERS.get(job.source_category)
 
 
-@shared_task(bind=True, max_retries=2)
-def process_ingestion_job(self, job_id: str):
-    """Celery task — idempotent via source_row_hash dedup in pipeline."""
+def run_ingestion_job_sync(job_id: str) -> str:
+    """
+    Run ingestion in-process (no Celery).
+    Used when worker is unavailable or INGESTION_RUN_SYNC=True.
+    """
     job = IngestionJob.objects.select_related("tenant").get(pk=job_id)
     if job.status not in (
         IngestionJob.Status.PENDING,
@@ -49,13 +51,43 @@ def process_ingestion_job(self, job_id: str):
     if not parse_fn:
         job.status = IngestionJob.Status.FAILED
         job.error_log = [{"row": 0, "message": f"Unknown source {job.source_category}"}]
-        job.save()
+        job.save(update_fields=["status", "error_log", "updated_at"])
         return "FAILED"
 
+    run_ingestion_pipeline(job, parse_fn)
+    job.refresh_from_db()
+    return job.status
+
+
+def dispatch_ingestion_job(job_id: str) -> None:
+    """Queue via Celery or run synchronously depending on settings."""
+    from django.conf import settings
+
+    run_sync = getattr(settings, "CELERY_TASK_ALWAYS_EAGER", False) or getattr(
+        settings, "INGESTION_RUN_SYNC", True
+    )
+
+    if run_sync:
+        logger.info("Running ingestion job %s synchronously", job_id)
+        run_ingestion_job_sync(job_id)
+        return
+
     try:
-        run_ingestion_pipeline(job, parse_fn)
+        process_ingestion_job.delay(job_id)
+        logger.info("Dispatched ingestion job %s to Celery", job_id)
+    except Exception:
+        logger.exception(
+            "Celery dispatch failed for job %s — falling back to sync", job_id
+        )
+        run_ingestion_job_sync(job_id)
+
+
+@shared_task(bind=True, max_retries=2)
+def process_ingestion_job(self, job_id: str):
+    """Celery task — idempotent via source_row_hash dedup in pipeline."""
+    try:
+        return run_ingestion_job_sync(job_id)
     except Exception:
         if self.request.retries < self.max_retries:
             raise self.retry(countdown=30)
         raise
-    return job.status
