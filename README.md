@@ -8,8 +8,8 @@ Ingests emissions data from three real-world source types (SAP, utility portals,
 
 | Service | URL | Notes |
 |---------|-----|-------|
-| **Frontend** | `https://<your-vercel-app>.vercel.app` | React analyst dashboard |
-| **Backend API** | `https://<your-railway-app>.up.railway.app/api/v1/` | Django REST |
+| **Frontend** | `https://breathe-esg-assignment-beige.vercel.app/` | React analyst dashboard |
+| **Backend API** | `https://web-production-4e4ee.up.railway.app/api/v1` | Django REST |
 | **Health check** | `/api/v1/health/` | DB connectivity probe |
 
 ### Demo credentials
