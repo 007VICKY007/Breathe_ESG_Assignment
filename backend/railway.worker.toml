@@ -1,0 +1,6 @@
+[build]
+builder = "NIXPACKS"
+
+[deploy]
+startCommand = "celery -A breathe_esg worker -l info --concurrency 2"
+restartPolicyType = "ON_FAILURE"

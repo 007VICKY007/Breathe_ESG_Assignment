@@ -1,0 +1,32 @@
+EmployeeID,ReportID,ExpenseType,TransactionDate,Amount,Currency,VendorName,Origin_Airport,Destination_Airport,CabinClass,CarrierCode,TripType,PropertyName,City,CheckIn,CheckOut,RoomNights,VendorType,Distance_km,PickupCity,DropCity
+E10294,RPT-2024-00821,Airfare,2024-01-22,1248.50,USD,United Airlines,SFO,ORD,Economy,UA,One-Way,,,,,,,,,
+E10294,RPT-2024-00821,Airfare,2024-01-28,1189.00,USD,United Airlines,ORD,SFO,Economy,UA,Return,,,,,,,,,
+E20441,RPT-2024-01204,Airfare,2024-02-14,4892.00,USD,Lufthansa,FRA,SIN,Business,LH,One-Way,,,,,,,,,
+E20441,RPT-2024-01204,Airfare,2024-02-28,892.00,USD,Singapore Airlines,SIN,DEL,Premium Economy,SQ,One-Way,,,,,,,,,
+E30102,RPT-2024-01567,Airfare,2024-03-05,756.00,USD,British Airways,LHR,JFK,,BA,One-Way,,,,,,,,,
+E30102,RPT-2024-01567,Airfare,2024-03-05,756.00,USD,British Airways,JFK,JFK,Economy,BA,Return,,,,,,,,,
+E10294,RPT-2024-02001,Airfare,2024-04-18,2100.00,USD,Emirates,DXB,LHR,First,EK,One-Way,,,,,,,,,
+E20441,RPT-2024-02234,Airfare,2024-05-02,445.00,USD,IndiGo,DEL,BOM,Economy,6E,One-Way,,,,,,,,,
+E30102,RPT-2024-02456,Airfare,2024-06-10,1680.00,USD,Delta,ATL,LAX,Economy,DL,One-Way,,,,,,,,,
+E10294,RPT-2024-02890,Airfare,2024-07-22,920.00,USD,American Airlines,DFW,MIA,Economy,AA,One-Way,,,,,,,,,
+E20441,RPT-2024-03102,Airfare,2024-08-15,1340.00,USD,Air France,CDG,JFK,Business,AF,One-Way,,,,,,,,,
+E30102,RPT-2024-03345,Airfare,2024-09-08,580.00,USD,Southwest,DEN,PHX,Economy,WN,One-Way,,,,,,,,,
+E10294,RPT-2024-00821,Hotel,2024-01-23,892.40,USD,Marriott,,,,,,Chicago Marriott Downtown,Chicago,2024-01-22,2024-01-25,3,,,,
+E20441,RPT-2024-01204,Hotel,2024-02-15,2450.00,USD,Raffles,,,,,,Raffles Singapore,Singapore,2024-02-14,2024-02-17,3,,,,
+E30102,RPT-2024-01567,Lodging,2024-03-06,3200.00,USD,Four Seasons,,,,,,Four Seasons NYC,New York,2024-03-05,2024-03-07,2,,,,
+E10294,RPT-2024-02001,Hotel,2024-04-19,445.00,USD,Hilton,,,,,,Hilton Munich City,Munich,2024-04-18,2024-04-20,,,,,
+E20441,RPT-2024-02234,Hotel,2024-05-03,156.00,USD,OYO,,,,,,OYO Townhouse,Mumbai,2024-05-02,2024-05-03,1,,,,
+E30102,RPT-2024-02456,Lodging,2024-06-11,678.00,USD,Hyatt,,,,,,Hyatt Regency LA,Los Angeles,2024-06-10,2024-06-12,2,,,,
+E10294,RPT-2024-02890,Hotel,2024-07-23,534.00,USD,Westin,,,,,,Westin Boston,Boston,2024-07-22,2024-07-24,2,,,,
+E10294,RPT-2024-00821,Taxi,2024-01-22,45.80,USD,Uber,,,,,,,,,,,TAXI,18,Chicago O'Hare,Chicago Downtown
+E20441,RPT-2024-01204,Rail,2024-02-16,89.00,USD,Deutsche Bahn,,,,,,,,,,,RAIL,340,Frankfurt,Munich
+E30102,RPT-2024-01567,Car Rental,2024-03-07,234.00,USD,Hertz,,,,,,,,,,,RENTAL,,New York,Newark
+E10294,RPT-2024-02001,Taxi,2024-04-18,62.50,USD,Lyft,,,,,,,,,,,RIDESHARE,24,Munich Airport,City Center
+E20441,RPT-2024-02234,Taxi,2024-05-02,12.00,USD,Uber India,,,,,,,,,,,TAXI,8,Mumbai Airport,BKC
+E30102,RPT-2024-02456,Ground,2024-06-10,78.00,USD,SuperShuttle,,,,,,,,,,,SHUTTLE,42,LAX,Downtown LA
+E10294,RPT-2024-02890,Rail,2024-07-22,156.00,USD,Amtrak,,,,,,,,,,,RAIL,450,Boston,New York
+E20441,RPT-2024-03102,Car Rental,2024-08-16,312.00,USD,Enterprise,,,,,,,,,,,RENTAL,280,Paris CDG,Lille
+E30102,RPT-2024-03345,Taxi,2024-09-08,38.00,USD,Yellow Cab,,,,,,,,,,,TAXI,,Denver,Denver
+E10294,RPT-2024-03500,Airfare,2024-10-12,890.00,USD,JetBlue,BOS,SEA,Economy,B6,One-Way,,,,,,,,,
+E20441,RPT-2024-03500,Hotel,2024-10-13,445.00,USD,Kimpton,,,,,,Kimpton Seattle,Seattle,2024-10-12,2024-10-14,2,,,,
+E30102,RPT-2024-03500,Taxi,2024-10-12,55.00,USD,Uber,,,,,,,,,,,TAXI,22,Seattle Tacoma,Downtown
