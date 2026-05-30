@@ -2,7 +2,7 @@
 set -euo pipefail
 
 # Railway injects PORT; default 8000 for local Docker tests
-PORT="${PORT:-8000}"
+PORT="${PORT:-8080}"
 
 echo "==> Running migrations..."
 python manage.py migrate --noinput
