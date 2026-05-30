@@ -3,11 +3,7 @@
 builder = "NIXPACKS"
 
 [deploy]
-<<<<<<< HEAD
 startCommand = "chmod +x start.sh && ./start.sh"
 healthcheckPath = "/api/v1/health/"
 healthcheckTimeout = 300
-=======
-startCommand = "python manage.py collectstatic --noinput && python manage.py migrate --noinput && python manage.py bootstrap_demo && gunicorn breathe_esg.wsgi:application --bind 0.0.0.0:8080 --workers 2 --timeout 120"
->>>>>>> 39b91bfab83dedf920099b9467c7acdfb5f9fc8c
-restartPolicyType = "ON_FAILURE"
+
