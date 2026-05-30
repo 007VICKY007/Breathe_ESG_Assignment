@@ -3,6 +3,4 @@ builder = "NIXPACKS"
 
 [deploy]
 startCommand = "python manage.py migrate --noinput && python manage.py bootstrap_demo && gunicorn breathe_esg.wsgi:application --bind 0.0.0.0:$PORT --workers 2 --timeout 120"
-healthcheckPath = "/api/v1/health/"
-healthcheckTimeout = 120
 restartPolicyType = "ON_FAILURE"
